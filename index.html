@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SentinelID — Identity Manager (UI Prototype)</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <svg width="36" height="36" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12 1L3 5v6c0 5 3.58 9.74 9 11 5.42-1.26 9-6 9-11V5l-9-4zM12 8a4 4 0 100 8 4 4 0 000-8z"/></svg>
+      <div>
+        <h1>SentinelID</h1>
+        <p class="muted">Identity Manager</p>
+      </div>
+    </div>
+    <nav class="top-actions">
+      <input id="quick-search" placeholder="Search aliases, sessions…" aria-label="Search" />
+      <button id="new-alias-btn" class="btn primary">New Alias</button>
+    </nav>
+  </header>
+
+  <main class="layout">
+    <aside class="sidebar">
+      <ul>
+        <li class="active">Dashboard</li>
+        <li>Aliases</li>
+        <li>Sessions</li>
+        <li>Leak Monitor</li>
+        <li>Settings</li>
+      </ul>
+      <div class="sidebar-footer">
+        <small class="muted">v0.1 • Prototype</small>
+      </div>
+    </aside>
+
+    <section class="content" id="app">
+      <!-- Main Grid Layout -->
+      <section class="grid">
+        <!-- Left Column: Identity Management -->
+        <div class="col-left">
+          <!-- Alias Manager Section -->
+          <article class="card primary-card" id="alias-manager">
+            <header class="card-head">
+              <div class="card-title">
+                <h2>Identity Manager</h2>
+                <p class="muted small">Create and manage your digital identities</p>
+              </div>
+              <div class="card-actions">
+                <button class="btn icon-btn" id="import-btn" aria-label="Import aliases">
+                  <span class="icon">↓</span>
+                  <span>Import</span>
+                </button>
+                <button class="btn icon-btn" id="export-btn" aria-label="Export aliases">
+                  <span class="icon">↑</span>
+                  <span>Export</span>
+                </button>
+              </div>
+            </header>
+
+            <div class="card-section">
+              <h3 class="section-title">Create New Alias</h3>
+              <form id="alias-form" class="form-group" aria-label="Create alias">
+                <div class="form-row">
+                  <div class="form-field">
+                    <label for="alias-name">Alias Name</label>
+                    <input id="alias-name" placeholder="e.g., amazon, netflix" required />
+                  </div>
+                  <div class="form-field">
+                    <label for="alias-domain">Domain</label>
+                    <input id="alias-domain" placeholder="example.com" value="example.com" required />
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-field">
+                    <label for="alias-group">Group</label>
+                    <select id="alias-group">
+                      <option value="important">Important</option>
+                      <option value="shopping">Shopping</option>
+                      <option value="social">Social</option>
+                      <option value="work">Work</option>
+                      <option value="spam">Spam</option>
+                    </select>
+                  </div>
+                  <button class="btn primary" type="submit">Create Alias</button>
+                </div>
+              </form>
+            </div>
+
+            <div class="card-section">
+              <div class="section-header">
+                <h3 class="section-title">Your Aliases</h3>
+                <div class="section-actions">
+                  <select id="alias-filter" aria-label="Filter aliases">
+                    <option value="all">All Groups</option>
+                    <option value="important">Important</option>
+                    <option value="shopping">Shopping</option>
+                    <option value="social">Social</option>
+                    <option value="work">Work</option>
+                    <option value="spam">Spam</option>
+                  </select>
+                </div>
+              </div>
+              <div class="alias-list" id="alias-list" aria-live="polite">
+                <!-- Dynamically filled -->
+              </div>
+            </div>
+
+            <!-- Agentic Protection -->
+            <div class="card-section protection-section">
+              <div class="section-header">
+                <h3 class="section-title">Agentic Protection</h3>
+                <div class="agentic-controls">
+                  <label class="switch">
+                    <input id="agentic-toggle" type="checkbox" />
+                    <span class="slider"></span>
+                  </label>
+                  <span class="switch-label">Agentic Mode</span>
+                </div>
+              </div>
+              <p class="muted small">AI-assisted monitoring of hidden tabs and sensitive API requests.</p>
+              <div id="agentic-log" class="agentic-log">
+                <div class="log-header">
+                  <span>Activity Monitor</span>
+                  <button class="btn small clear-btn" id="clear-log">Clear</button>
+                </div>
+                <div class="log-content muted small">No events yet.</div>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <!-- Right Column: Tools -->
+        <div class="col-right">
+          <!-- Password Generator -->
+          <article class="card" id="password-gen">
+            <header class="card-head">
+              <div class="card-title">
+                <h2>Password Generator</h2>
+                <p class="muted small">Create strong, unique passwords</p>
+              </div>
+            </header>
+            <div class="card-body">
+              <label for="pw-length">Length: <span id="pw-length-value">16</span></label>
+              <input id="pw-length" type="range" min="8" max="64" value="16" />
+              <div class="pw-row">
+                <input id="generated-pw" readonly aria-readonly="true" placeholder="Generated password" />
+                <div>
+                  <button class="btn" id="gen-btn">Generate</button>
+                  <button class="btn" id="copy-pw">Copy</button>
+                </div>
+              </div>
+              <p class="muted small">Passwords are generated client-side for demo purposes. In production, store them in an encrypted vault.</p>
+            </div>
+          </article>
+
+        <!-- Virtual Sessions - Main Feature -->
+        <article class="card featured" id="sessions">
+          <header class="card-head">
+            <div class="card-title">
+              <h2>Virtual Sessions</h2>
+              <p class="muted small">Isolated browsing environments with dedicated identities</p>
+            </div>
+          </header>
+          <div class="card-body">
+            <form class="session-form">
+              <div class="form-group">
+                <div class="form-row">
+                  <div class="form-field">
+                    <label for="session-site">Site</label>
+                    <input id="session-site" placeholder="example.com" />
+                  </div>
+                  <div class="form-field">
+                    <label for="session-alias">Alias</label>
+                    <select id="session-alias">
+                      <option value="">(none)</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-action">
+                  <button type="submit" class="btn primary create-session-btn" id="create-session">
+                    <span class="icon">+</span>
+                    Create Session
+                  </button>
+                </div>
+              </div>
+            </form>
+            <div id="session-list" class="session-list"></div>
+          </div>
+        </article>
+
+        <!-- Security Features Group -->
+        <div class="security-features">
+          <!-- Leak Detection -->
+          <article class="card" id="leak-detect">
+            <header class="card-head">
+              <div class="card-title">
+                <h2>Leak Detection</h2>
+                <p class="muted small">Monitor your digital footprint</p>
+              </div>
+            </header>
+            <div class="card-body">
+              <div class="security-section">
+                <h3>Leak Detection</h3>
+                <label>Check real email in breach databases</label>
+                <div class="form-inline">
+                  <input id="real-email" placeholder="you@yourdomain.com" type="email" />
+                  <button class="btn" id="check-email">
+                    <span class="icon">🔍</span>
+                    Check
+                  </button>
+                </div>
+                <div id="leak-result" class="muted small">No checks yet.</div>
+              </div>
+            </div>
+          </article>
+        </div>
+
+      </section>
+
+      <footer class="footer muted">Prototype UI — no backend connected. Use as a visual and interaction scaffold.</footer>
+    </section>
+  </main>
+
+  <!-- Alias modal -->
+  <div id="modal" class="modal" aria-hidden="true">
+    <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <button class="modal-close" id="modal-close" aria-label="Close">×</button>
+      <h3 id="modal-title">Alias details</h3>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
